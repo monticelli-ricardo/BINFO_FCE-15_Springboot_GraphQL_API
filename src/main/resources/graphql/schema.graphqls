@@ -1,0 +1,40 @@
+scalar Long
+
+type CountryInfo {
+    _id: Int
+    iso2: String
+    iso3: String
+    lat: Float
+    long: Float
+    flag: String
+}
+
+type Covid19Data {
+    updated: Long
+    country: String
+    countryInfo: CountryInfo
+    cases: Int
+    todayCases: Int
+    deaths: Int
+    todayDeaths: Int
+    recovered: Int
+    todayRecovered: Int
+    active: Int
+    critical: Int
+    casesPerOneMillion: Float
+    deathsPerOneMillion: Float
+    tests: Int
+    testsPerOneMillion: Float
+    population: Long
+    continent: String
+    oneCasePerPeople: Int
+    oneDeathPerPeople: Int
+    oneTestPerPeople: Int
+    activePerOneMillion: Float
+    recoveredPerOneMillion: Float
+    criticalPerOneMillion: Float
+}
+
+type Query {
+    getCovid19DataByCountry(countries: [String]): [Covid19Data]
+}
