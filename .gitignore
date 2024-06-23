@@ -1,3 +1,13 @@
+### VS Code ###
+*.zip
+/test
+src/main/frontend/
+src/test/
+src/main/resources/templates/
+src/main/resources/static/
+*.DS_Store
+
+### Gradle ###
 node_modules
 HELP.md
 .gradle
@@ -5,6 +15,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+*.bat
+gradlew
+gradle/
 
 ### STS ###
 .apt_generated
@@ -36,3 +49,5 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
