@@ -1,0 +1,8 @@
+{
+    "query": "query getCovid19DataByCountry($countries: [String!], $selectedFields: [String!]) { getCovid19DataByCountry(countries: $countries, selectedFields: $selectedFields) { country cases deaths countryInfo { _id iso2 iso3 lat long flag } } }",
+    "variables": {
+      "countries": ["Zimbabwe"],
+      "selectedFields": ["country", "cases", "deaths", "countryInfo"]
+    }
+  }
+  
