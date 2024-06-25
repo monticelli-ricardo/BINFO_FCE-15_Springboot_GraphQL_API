@@ -4,20 +4,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CountryInfo {
     // properties
-    private int _id;
+    @JsonProperty("_id")
+    private int id;
+
+    @JsonProperty("iso2")
     private String iso2;
+
+    @JsonProperty("iso3")
     private String iso3;
+
+    @JsonProperty("lat")
     private float lat;
+
+    @JsonProperty("long")
     private float longg;
+
+    @JsonProperty("flag")
     private String flag;
 
     // Getters and Setters
     
-    public int get_id() {
-        return _id;
+    public int getId() {
+        return id;
     }
-    public void set_id(int _id) {
-        this._id = _id;
+    public void setId(int id) {
+        this.id = id;
     }
     public String getIso2() {
         return iso2;
@@ -37,12 +48,13 @@ public class CountryInfo {
     public void setLat(float lat) {
         this.lat = lat;
     }
-    @JsonProperty("long")
+
+    @JsonProperty("long") // to resolve name conflict
     public float getLongg() {
         return longg;
     }
     
-    @JsonProperty("long")
+    @JsonProperty("long") // to resolve name conflict
     public void setLongg(float longg) {
         this.longg = longg;
     }

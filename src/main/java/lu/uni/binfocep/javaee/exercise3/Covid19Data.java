@@ -1,30 +1,77 @@
 package lu.uni.binfocep.javaee.exercise3;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Covid19Data {
 
     // Properties
-    private Long updated;
+    @JsonProperty("updated")
+    private long updated;
+
+    @JsonProperty("country")
     private String country;
+
+    @JsonProperty("countryInfo")
     private CountryInfo countryInfo;
+
+    @JsonProperty("cases")
     private int cases;
+
+    @JsonProperty("todayCases")
     private int todayCases;
+
+    @JsonProperty("deaths")
     private int deaths;
+
+    @JsonProperty("todayDeaths")
     private int todayDeaths;
+
+    @JsonProperty("recovered")
     private int recovered;
+
+    @JsonProperty("todayRecovered")
     private int todayRecovered;
+
+    @JsonProperty("active")
     private int active;
+
+    @JsonProperty("critical")
     private int critical;
+
+    @JsonProperty("casesPerOneMillion")
     private float casesPerOneMillion;
+
+    @JsonProperty("deathsPerOneMillion")
     private float deathsPerOneMillion;
+
+    @JsonProperty("tests")
     private int tests;
+
+    @JsonProperty("testsPerOneMillion")
     private float testsPerOneMillion;
+
+    @JsonProperty("population")
     private int population;
+
+    @JsonProperty("continent")
     private String continent;
+
+    @JsonProperty("oneCasePerPeople")
     private int oneCasePerPeople;
+
+    @JsonProperty("oneDeathPerPeople")
     private int oneDeathPerPeople;
+
+    @JsonProperty("oneTestPerPeople")
     private int oneTestPerPeople;
+
+    @JsonProperty("activePerOneMillion")
     private float activePerOneMillion;
+
+    @JsonProperty("recoveredPerOneMillion")
     private float recoveredPerOneMillion;
+
+    @JsonProperty("criticalPerOneMillion")
     private float criticalPerOneMillion;
 
     // Getters and Setters
