@@ -18,7 +18,7 @@ public class QueryResolver implements GraphQLQueryResolver {
         this.covid19DataService = covid19DataService;
     }
 
-    public List<Covid19Data> getCovid19Data(List<String> countries, List<String> selectedFields) throws IOException {
+    public List<Covid19Data> getCovid19DataByCountry(List<String> countries, List<String> selectedFields) throws IOException {
         return covid19DataService.getCovid19DataByCountry(countries, selectedFields);
     }
 
