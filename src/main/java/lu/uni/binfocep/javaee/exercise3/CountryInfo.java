@@ -3,6 +3,7 @@ package lu.uni.binfocep.javaee.exercise3;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CountryInfo {
+
     // properties
     @JsonProperty("_id")
     private int id;
@@ -49,12 +50,10 @@ public class CountryInfo {
         this.lat = lat;
     }
 
-    @JsonProperty("long") // to resolve name conflict
     public float getLongg() {
         return longg;
     }
     
-    @JsonProperty("long") // to resolve name conflict
     public void setLongg(float longg) {
         this.longg = longg;
     }
