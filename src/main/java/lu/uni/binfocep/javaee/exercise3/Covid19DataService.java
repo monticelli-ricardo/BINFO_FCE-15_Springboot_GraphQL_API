@@ -35,20 +35,20 @@ public class Covid19DataService {
 
             Covid19Data[] data = mapper.readValue(response, Covid19Data[].class);
             if (data != null) {
-                // Populate `CountryInfo` object
-                for (Covid19Data item : data) {
-                    if (item.getCountryInfo() == null) {
-                        logger.warning("CountryInfo is null for country: " + item.getCountry());
-                    } else {
-                        logger.info("CountryInfo for country " + item.getCountry() + ":");
-                        logger.info("  ID: " + item.getCountryInfo().getId());
-                        logger.info("  ISO2: " + item.getCountryInfo().getIso2());
-                        logger.info("  ISO3: " + item.getCountryInfo().getIso3());
-                        logger.info("  Lat: " + item.getCountryInfo().getLat());
-                        logger.info("  Long: " + item.getCountryInfo().getLongg()); 
-                        logger.info("  Flag: " + item.getCountryInfo().getFlag());
-                    }
-                }
+                // // log `CountryInfo` object
+                // for (Covid19Data item : data) {
+                //     if (item.getCountryInfo() == null) {
+                //         logger.warning("CountryInfo is null for country: " + item.getCountry());
+                //     } else {
+                //         logger.info("CountryInfo for country " + item.getCountry() + ":");
+                //         logger.info("  ID: " + item.getCountryInfo().getId());
+                //         logger.info("  ISO2: " + item.getCountryInfo().getIso2());
+                //         logger.info("  ISO3: " + item.getCountryInfo().getIso3());
+                //         logger.info("  Lat: " + item.getCountryInfo().getLat());
+                //         logger.info("  Long: " + item.getCountryInfo().getLongg()); 
+                //         logger.info("  Flag: " + item.getCountryInfo().getFlag());
+                //     }
+                // }
                 cachedData = List.of(data);
                 logger.info("Fetched and cached data for " + cachedData.size() + " countries");
                 //logCovid19Data(cachedData);
