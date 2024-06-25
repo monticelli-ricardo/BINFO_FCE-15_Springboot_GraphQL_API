@@ -15,13 +15,12 @@ public class GraphqlClient {
         this.covid19DataService = covid19DataService;
     }
 
-    public List<Covid19Data> getCovid19DataByCountry(List<String> countries) {
-        try {
-            return covid19DataService.getCovid19DataByCountry(countries);
-        } catch (IOException e) {
-            // Handle exception appropriately
-            e.printStackTrace();
-            return null;
-        }
+    public List<Covid19Data> fetchCovid19Data(List<String> countries, List<String> selectedFields) throws IOException {
+        return covid19DataService.getCovid19DataByCountry(countries, selectedFields);
+    }
+
+
+    public List<String> fetchAvailableCountries() throws IOException{
+        return covid19DataService.getAvailableCountries();
     }
 }
