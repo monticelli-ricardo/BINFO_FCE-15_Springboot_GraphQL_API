@@ -10,7 +10,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.data.provider.CallbackDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -23,33 +26,78 @@ public class Covid19DataView extends VerticalLayout {
     private final Covid19DataService covid19DataService;
     private final MultiSelectComboBox<String> countryComboBox = new MultiSelectComboBox<>();
     private final Grid<Covid19Data> grid = new Grid<>();
-    private final CheckboxGroup<String> checkboxGroup = new CheckboxGroup<>();;
+    private final CheckboxGroup<String> checkboxGroup = new CheckboxGroup<>();
     private Set<String> selectedItems = checkboxGroup.getSelectedItems();;
     private List<String> extraFields = new ArrayList<>(selectedItems);
+    private final List<String> items = new ArrayList<>(List.of(
+            "updated", "countryInfo", "todayCases", "todayDeaths", "recovered", 
+            "todayRecovered", "active", "critical", "casesPerOneMillion", "deathsPerOneMillion", 
+            "tests", "testsPerOneMillion", "population", "continent", 
+            "oneCasePerPeople", "oneDeathPerPeople", "oneTestPerPeople", 
+            "activePerOneMillion", "recoveredPerOneMillion", "criticalPerOneMillion"
+    ));
 
     // View Constructor
     @Autowired
     public Covid19DataView(Covid19DataService covid19DataService) {
         this.covid19DataService = covid19DataService;
-        add(createTitle(), createSubtitle(), createFetchButton(), createCountryComboBox(), createFieldSelectionComponent(), createGrid(extraFields));
+        add(
+            createTitle(), 
+            createMenuSubtitle(), 
+            createCountryComboBox(),
+            createFieldSelectionComponent(),
+            createFetchButton(), 
+            createSelectAllFieldsButton(), 
+            createFetchAllButton(),
+            createResultSubtitle(),
+            createGrid(extraFields)
+        );
     }
 
     // Methods to create View Components
     private Component createTitle() {
-        return new H1("Exercise3");
+        return new H1("Exercise3: Springboot + GraphQL API");
     }
 
-    private Component createSubtitle() {
+    private Component createMenuSubtitle() {
         return new H2("Menu");
     }
+
+    private Component createResultSubtitle() {
+        return new H2("Results");
+    }
+
 
     private Button createFetchButton() {
         Button button = new Button("Fetch Data");
         button.addClickListener(e -> {
-            fetchData(countryComboBox.getValue(), extraFields);
+            // Initialize local variables
+            List<String> countries = new ArrayList<>(countryComboBox.getValue());
+            fetchData(countries, extraFields);
         });
         return button;
     }
+
+    private Button createSelectAllFieldsButton(){
+        Button button = new Button("Select All Fields", event -> {
+            try {
+                checkboxGroup.select(items);
+                // Update UI or display the selected data
+            } catch (Exception e) {
+                // Handle exception
+            }
+        });
+        return button;
+    } 
+
+    private Button createFetchAllButton(){
+        Button button = new Button("Fetch All");
+        button.addClickListener(e -> {
+            fetchData(fetchAvailableCountries(), extraFields);
+        });
+        return button;
+    } 
+
 
     private Component createCountryComboBox(){
         countryComboBox.setLabel("Select Country");
@@ -83,28 +131,7 @@ public class Covid19DataView extends VerticalLayout {
 
     private Component createFieldSelectionComponent() {
         checkboxGroup.setLabel("Select Fields");
-        checkboxGroup.setItems(
-                "updated",
-                "countryInfo",
-                "todayCases",
-                "todayDeaths",
-                "recovered",
-                "todayRecovered",
-                "active",
-                "critical",
-                "casesPerOneMillion",
-                "deathsPerOneMillion",
-                "tests",
-                "testsPerOneMillion",
-                "population",
-                "continent",
-                "oneCasePerPeople",
-                "oneDeathPerPeople",
-                "oneTestPerPeople",
-                "activePerOneMillion",
-                "recoveredPerOneMillion",
-                "criticalPerOneMillion"
-        );
+        checkboxGroup.setItems(items);
         return checkboxGroup;
     }
 
@@ -193,9 +220,7 @@ public class Covid19DataView extends VerticalLayout {
 
     // Custom Methods to fetch COVID19 information
 
-    private void fetchData(Set<String> country, List<String> extraFields) {
-        // Initialize local variables
-        List<String> countries = new ArrayList<>(country);
+    private void fetchData(List<String> countries, List<String> extraFields) {
         // Update variables based on new search parameters
         selectedItems.clear();
         selectedItems = checkboxGroup.getSelectedItems();
@@ -203,12 +228,33 @@ public class Covid19DataView extends VerticalLayout {
         for(String item : selectedItems){
             extraFields.add(item);
         }
-        List<Covid19Data> data = covid19DataService.getCovid19DataByCountry(countries, extraFields);
-        createGrid(extraFields);
-        grid.setItems(data);
+        try {
+            createGrid(extraFields);
+            grid.setItems(createDataProvider(countries, extraFields));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private List<String> fetchAvailableCountries() {
         return covid19DataService.getAvailableCountries();
+    }
+
+    
+
+    private DataProvider<Covid19Data, Void> createDataProvider(List<String> countries, List<String> extraFields) throws IOException {
+        return new CallbackDataProvider<>(
+            query -> {
+                // Fetch a specific page of data
+                int offset = query.getOffset();
+                int limit = query.getLimit();
+                List<Covid19Data> page = covid19DataService.getCovid19DataLazyByCountry(offset, limit, countries, extraFields);
+                return page.stream();
+            },  
+            query -> {
+                // Fetch the total count of items
+                return covid19DataService.getCovid19DataLazyByCountrySize(countries);
+            }
+        );
     }
 }

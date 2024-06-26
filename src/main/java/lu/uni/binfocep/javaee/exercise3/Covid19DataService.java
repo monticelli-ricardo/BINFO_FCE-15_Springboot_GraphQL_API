@@ -2,6 +2,8 @@ package lu.uni.binfocep.javaee.exercise3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,17 +20,17 @@ import org.springframework.web.client.RestTemplate;
 public class Covid19DataService {
 
     private static final Logger logger = Logger.getLogger(Covid19DataService.class.getName());
+    private static final String COVID_API_URL = "https://disease.sh/v3/covid-19/countries";
     private List<Covid19Data> cachedData = new ArrayList<>();
 
     @PostConstruct
     @Scheduled(fixedRate = 3600000) // Fetch and cache data every hour
-    public void fetchAndCacheData() {
+    public void fetchAndCacheData() throws IOException  {
         logger.info("Starting fetchAndCacheData method");
         try {
-            String url = "https://disease.sh/v3/covid-19/countries";
-            logger.info("Fetching data from API: " + url);
+            logger.info("Fetching data from API: " + COVID_API_URL);
             RestTemplate restTemplate = new RestTemplate();
-            String response = restTemplate.getForObject(url, String.class);
+            String response = restTemplate.getForObject(COVID_API_URL, String.class);
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -60,7 +62,22 @@ public class Covid19DataService {
         }
     }
 
-    public List<Covid19Data> getCovid19DataByCountry(List<String> countries, List<String> selectedFields) {
+    public List<Covid19Data> getCovid19Data(List<String> countries) throws IOException {
+        try {
+            logger.info("Starting `getCovid19Data` method with countries: " + countries);
+            List<Covid19Data> result = cachedData.stream()
+                    .filter(data -> countries.contains(data.getCountry()))
+                    .collect(Collectors.toList());
+            logger.info("GraphQL result: " + result);
+            return result;
+        } catch (Exception e) {
+            logger.warning("Error occurred in getCovid19Data: " + e);
+            throw new IOException("Error fetching COVID-19 data", e); // Example, use appropriate exception type
+        }
+    }
+    
+
+    public List<Covid19Data> getCovid19DataByCountry(List<String> countries, List<String> selectedFields) throws IOException  {
         logger.info("Starting `getCovid19DataByCountry` method with countries: " + countries + " and selectedFields: " + selectedFields);
         List<Covid19Data> result = cachedData.stream()
                 .filter(data -> countries.contains(data.getCountry()))
@@ -68,9 +85,30 @@ public class Covid19DataService {
                 .collect(Collectors.toList());
         logger.info("Returning data for " + result.size() + " countries after filtering");
 
-        logCovid19Data(result);
+        //logCovid19Data(result);
 
         return result;
+    }
+
+    public List<Covid19Data> getCovid19DataLazyByCountry(int offset, int limit, List<String> countries, List<String> selectedFields) {
+        List<Covid19Data> result = cachedData.stream()
+                .filter(data -> countries.contains(data.getCountry()))
+                .map(data -> filterFields(data, selectedFields))
+                .skip(offset)
+                .limit(limit)
+                .collect(Collectors.toList());
+        
+        logger.info("Returning data for " + result.size() + " countries after filtering");
+
+        //logCovid19Data(result);
+
+        return result;
+    }
+    
+    public int getCovid19DataLazyByCountrySize(List<String> countries) {
+        return (int) cachedData.stream()
+                .filter(data -> countries.contains(data.getCountry()))
+                .count();
     }
 
     private Covid19Data filterFields(Covid19Data data, List<String> selectedFields) {
