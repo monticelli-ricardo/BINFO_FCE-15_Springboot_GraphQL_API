@@ -51,7 +51,7 @@ public class Covid19Data {
     private float testsPerOneMillion;
 
     @JsonProperty("population")
-    private int population;
+    private long population;
 
     @JsonProperty("continent")
     private String continent;
@@ -166,10 +166,10 @@ public class Covid19Data {
     public void setTestsPerOneMillion(float testsPerOneMillion) {
         this.testsPerOneMillion = testsPerOneMillion;
     }
-    public int getPopulation() {
+    public long getPopulation() {
         return population;
     }
-    public void setPopulation(int population) {
+    public void setPopulation(long population) {
         this.population = population;
     }
     public String getContinent() {
