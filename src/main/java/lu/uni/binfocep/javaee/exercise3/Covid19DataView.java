@@ -98,9 +98,15 @@ public class Covid19DataView extends VerticalLayout {
     private Button createSelectAllFieldsButton(){
         Button button = new Button("Select All Fields", event -> {
             try {
-                // Update UI or display the selected data
-                checkboxGroup.clear();
-                checkboxGroup.select(items);
+                // Check all boxes
+                checkboxGroup.deselectAll();
+                checkboxGroup.select(List.of(
+                    "updated", "countryInfo", "todayCases", "todayDeaths", "recovered", 
+                    "todayRecovered", "active", "critical", "casesPerOneMillion", "deathsPerOneMillion", 
+                    "tests", "testsPerOneMillion", "population", "continent", 
+                    "oneCasePerPeople", "oneDeathPerPeople", "oneTestPerPeople", 
+                    "activePerOneMillion", "recoveredPerOneMillion", "criticalPerOneMillion"
+                ));
             } catch (Exception e) {
                 // Handle exception
                 e.printStackTrace();
@@ -114,7 +120,7 @@ public class Covid19DataView extends VerticalLayout {
         Button button = new Button("Clear All Fields", event -> {
             try {
                 // Clear checkboxes
-                checkboxGroup.clear();
+                checkboxGroup.deselectAll();
             } catch (Exception e) {
                 // Handle exception
                 e.printStackTrace();
@@ -130,7 +136,7 @@ public class Covid19DataView extends VerticalLayout {
             try{
                 countries.clear();
                 countries.addAll(fetchAvailableCountries());
-                fetchData(countries, items);
+                fetchData(countries, extraFields);
             } catch(Exception e){
                 // Handle exception
                 e.printStackTrace();
