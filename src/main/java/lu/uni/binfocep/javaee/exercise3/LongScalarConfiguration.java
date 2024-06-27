@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 
+// Dedicated class to handle data type Long in graphQL
 
 @Configuration
 public class LongScalarConfiguration {
