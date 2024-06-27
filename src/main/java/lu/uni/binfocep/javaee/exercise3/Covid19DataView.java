@@ -98,11 +98,12 @@ public class Covid19DataView extends VerticalLayout {
     private Button createSelectAllFieldsButton(){
         Button button = new Button("Select All Fields", event -> {
             try {
+                // Update UI or display the selected data
                 checkboxGroup.clear();
                 checkboxGroup.select(items);
-                // Update UI or display the selected data
             } catch (Exception e) {
                 // Handle exception
+                e.printStackTrace();
             }
         });
         return button;
@@ -112,10 +113,11 @@ public class Covid19DataView extends VerticalLayout {
     private Button createUnselectAllFieldsButton(){
         Button button = new Button("Clear All Fields", event -> {
             try {
+                // Clear checkboxes
                 checkboxGroup.clear();
-                // Update UI or display the selected data
             } catch (Exception e) {
                 // Handle exception
+                e.printStackTrace();
             }
         });
         return button;
@@ -124,10 +126,15 @@ public class Covid19DataView extends VerticalLayout {
     // Method to fetch COVID19 data from ALL available countries based on selected subfields
     private Button createFetchAllButton(){
         Button button = new Button("Fetch Data");
-        button.addClickListener(e -> {
-            countries.clear();
-            countries.addAll(fetchAvailableCountries());
-            fetchData(countries, items);
+        button.addClickListener(event -> {
+            try{
+                countries.clear();
+                countries.addAll(fetchAvailableCountries());
+                fetchData(countries, items);
+            } catch(Exception e){
+                // Handle exception
+                e.printStackTrace();
+            }
         });
         return button;
     } 
