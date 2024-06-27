@@ -1,18 +1,20 @@
 # Exercise3 GraphQL API running in Spring Boot
 
 This project implements a GraphQL API using Spring Boot to retrieve COVID-19 data from an external source (https://disease.sh/v3/covid-19/countries) and expose it via a GraphiQL interface. 
+
 There is an additional web interface based on Vaadin accessible at: `http://localhost:8080/exercise3/view/`
 
 ## Getting Started
 
 To run this application locally, follow these steps:
 
-1. Clone the repository or unzip it:
+1. Unzip the project:
 
    ```bash
-   git clone <repository-url>
-   cd exercise3
+   unzip BINFO_FCE-15_Exercise3_Springboot_GraphQL_API-main.zip
+   cd exercise3/
    ```
+   
 
 2. Build the application using Gradle:
 
