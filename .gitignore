@@ -1,4 +1,5 @@
 ### VS Code ###
+*.mov
 *.zip
 /test
 src/main/frontend/
