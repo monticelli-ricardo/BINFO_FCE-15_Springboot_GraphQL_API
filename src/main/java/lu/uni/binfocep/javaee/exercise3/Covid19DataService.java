@@ -1,17 +1,20 @@
 package lu.uni.binfocep.javaee.exercise3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,14 +22,16 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class Covid19DataService {
 
+    // Properties
     private static final Logger logger = Logger.getLogger(Covid19DataService.class.getName());
     private static final String COVID_API_URL = "https://disease.sh/v3/covid-19/countries";
     private List<Covid19Data> cachedData = new ArrayList<>();
 
+    // Methods to fetch data for Vaadin
     @PostConstruct
     @Scheduled(fixedRate = 3600000) // Fetch and cache data every hour
     public void fetchAndCacheData() throws IOException  {
-        logger.info("Starting fetchAndCacheData method");
+        logger.info("Starting `fetchAndCacheData` method");
         try {
             logger.info("Fetching data from API: " + COVID_API_URL);
             RestTemplate restTemplate = new RestTemplate();
@@ -37,20 +42,6 @@ public class Covid19DataService {
 
             Covid19Data[] data = mapper.readValue(response, Covid19Data[].class);
             if (data != null) {
-                // // log `CountryInfo` object
-                // for (Covid19Data item : data) {
-                //     if (item.getCountryInfo() == null) {
-                //         logger.warning("CountryInfo is null for country: " + item.getCountry());
-                //     } else {
-                //         logger.info("CountryInfo for country " + item.getCountry() + ":");
-                //         logger.info("  ID: " + item.getCountryInfo().getId());
-                //         logger.info("  ISO2: " + item.getCountryInfo().getIso2());
-                //         logger.info("  ISO3: " + item.getCountryInfo().getIso3());
-                //         logger.info("  Lat: " + item.getCountryInfo().getLat());
-                //         logger.info("  Long: " + item.getCountryInfo().getLongg()); 
-                //         logger.info("  Flag: " + item.getCountryInfo().getFlag());
-                //     }
-                // }
                 cachedData = List.of(data);
                 logger.info("Fetched and cached data for " + cachedData.size() + " countries");
                 //logCovid19Data(cachedData);
@@ -62,34 +53,24 @@ public class Covid19DataService {
         }
     }
 
-    public List<Covid19Data> getCovid19Data(List<String> countries) throws IOException {
+    // Method to fetch data for GraphiQL
+    @Cacheable("covid19Data")
+    public List<Map<String, Object>> fetchAllData() {
+        logger.info("Starting `fetchAllData` method");
+        RestTemplate restTemplate = new RestTemplate();
+        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
-            logger.info("Starting `getCovid19Data` method with countries: " + countries);
-            List<Covid19Data> result = cachedData.stream()
-                    .filter(data -> countries.contains(data.getCountry()))
-                    .collect(Collectors.toList());
-            logger.info("GraphQL result: " + result);
-            return result;
+            logger.info("Fetching data from API: " + COVID_API_URL);
+            String jsonResponse = restTemplate.getForObject(COVID_API_URL, String.class);
+            return objectMapper.readValue(jsonResponse, new TypeReference<List<Map<String, Object>>>() {});
         } catch (Exception e) {
-            logger.warning("Error occurred in getCovid19Data: " + e);
-            throw new IOException("Error fetching COVID-19 data", e); // Example, use appropriate exception type
+            throw new RuntimeException("Failed to parse COVID-19 data", e);
         }
     }
-    
 
-    public List<Covid19Data> getCovid19DataByCountry(List<String> countries, List<String> selectedFields) throws IOException  {
-        logger.info("Starting `getCovid19DataByCountry` method with countries: " + countries + " and selectedFields: " + selectedFields);
-        List<Covid19Data> result = cachedData.stream()
-                .filter(data -> countries.contains(data.getCountry()))
-                .map(data -> filterFields(data, selectedFields))
-                .collect(Collectors.toList());
-        logger.info("Returning data for " + result.size() + " countries after filtering");
 
-        //logCovid19Data(result);
-
-        return result;
-    }
-
+    // Method to return COVID19 data based on cached data initially fetched
     public List<Covid19Data> getCovid19DataLazyByCountry(int offset, int limit, List<String> countries, List<String> selectedFields) {
         List<Covid19Data> result = cachedData.stream()
                 .filter(data -> countries.contains(data.getCountry()))
@@ -105,12 +86,14 @@ public class Covid19DataService {
         return result;
     }
     
+    // Method to return COVID19 data size based on cache
     public int getCovid19DataLazyByCountrySize(List<String> countries) {
         return (int) cachedData.stream()
                 .filter(data -> countries.contains(data.getCountry()))
                 .count();
     }
 
+    // Method to return COVID19 data in cache filtered by selected fields
     private Covid19Data filterFields(Covid19Data data, List<String> selectedFields) {
         Covid19Data filteredData = new Covid19Data();
         filteredData.setCountry(data.getCountry());
@@ -182,6 +165,7 @@ public class Covid19DataService {
         return filteredData;
     }
 
+    // Method to list all countries from COVID19 data in cache
     public List<String> getAvailableCountries() {
         logger.info("Starting `getAvailableCountries` method");
         List<String> countries = cachedData.stream()
