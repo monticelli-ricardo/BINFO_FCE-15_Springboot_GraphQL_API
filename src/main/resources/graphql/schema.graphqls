@@ -36,5 +36,7 @@ type Covid19Data {
 }
 
 type Query {
-    getCovid19DataByCountry(countries: [String], selectedFields: [String]): [Covid19Data]
+    getCovid19DataByCountry(countries: [String]): [Covid19Data]
+    getCovid19Data: [Covid19Data]
 }
+
