@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfig
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class})
 @EnableCaching
@@ -15,5 +17,10 @@ public class Exercise3 {
 	public static void main(String[] args) {
 		SpringApplication.run(Exercise3.class, args);
 	}
+
+	@Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
 }
